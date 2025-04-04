@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vijay Merchant</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background-color: #ecf0f1;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .seat-container {
+      display: grid;
+      grid-template-columns: repeat(6, 50px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .seat {
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      border: 2px solid #34495e;
+      text-align: center;
+      line-height: 50px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .seat.selected {
+      background-color: gray;
+      color: white;
+    }
+    .seat.occupied {
+      background-color: #e74c3c;
+      cursor: not-allowed;
+      color: white;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #loading {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #e67e22;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Vijay Merchant Stand</h1>
+  <p>Select your seats below:</p>
+
+  <div class="seat-container" id="seatContainer"></div>
+
+  <div class="info">
+    <p>Price per seat: <strong>$10</strong></p>
+    <p>Selected Seats: <span id="count">0</span></p>
+    <p>Total Price: $<span id="total">0</span></p>
+    <button id="bookBtn" onclick="proceedToPayment()">Book</button>
+    <p id="loading">Processing... Please wait.</p>
+  </div>
+
+  <script>
+    const seatContainer = document.getElementById('seatContainer');
+    const count = document.getElementById('count');
+    const total = document.getElementById('total');
+    const bookBtn = document.getElementById('bookBtn');
+    const loadingText = document.getElementById('loading');
+    const ticketPrice = 10;
+    const stand = "VijayMerchant"; // Match backend naming convention
+    const userId = localStorage.getItem("userId") || "user123"; // Replace with real user ID if available
+    const totalSeats = 30;
+    
+    // Create seat elements dynamically
+    function createSeats() {
+      for (let i = 1; i <= totalSeats; i++) {
+        const seat = document.createElement('div');
+        seat.classList.add('seat');
+        seat.innerText = i;
+        seat.dataset.id = i;
+        seat.addEventListener('click', () => toggleSeat(seat));
+        seatContainer.appendChild(seat);
+      }
+    }
+
+    function toggleSeat(seat) {
+      if (!seat.classList.contains('occupied')) {
+        seat.classList.toggle('selected');
+        updateSelectedCount();
+      }
+    }
+
+    function updateSelectedCount() {
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      count.innerText = selectedSeats.length;
+      total.innerText = selectedSeats.length * ticketPrice;
+    }
+
+    async function proceedToPayment() {
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      if (selectedSeats.length === 0) {
+        alert('Please select at least one seat.');
+        return;
+      }
+
+      const seatNumbers = Array.from(selectedSeats).map(seat => parseInt(seat.innerText));
+      bookBtn.disabled = true;
+      loadingText.style.display = 'block';
+
+      try {
+        const response = await fetch('http://localhost:5000/api/seats/reserve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stand, seatNumbers, userId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const query = `?stand=${encodeURIComponent(stand)}&seats=${seatNumbers.join(',')}&user=${userId}`;
+          window.location.href = `../payment/payment.html${query}`;
+        } else {
+          alert('Some seats are already reserved. Refreshing seat status...');
+          fetchOccupiedSeats();
+        }
+      } catch (error) {
+        console.error("Error reserving seats:", error);
+        alert('Failed to reserve seats. Please try again.');
+      } finally {
+        bookBtn.disabled = false;
+        loadingText.style.display = 'none';
+      }
+    }
+
+    async function fetchOccupiedSeats() {
+      try {
+        const response = await fetch(`http://localhost:5000/api/seats/status?stand=${encodeURIComponent(stand)}`);
+        const data = await response.json();
+
+        if (data.success && data.occupiedSeats) {
+          document.querySelectorAll('.seat').forEach(seat => {
+            const seatNumber = parseInt(seat.dataset.id);
+            if (data.occupiedSeats.includes(seatNumber)) {
+              seat.classList.add('occupied');
+              seat.removeEventListener('click', () => toggleSeat(seat)); // Disable click event
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching occupied seats:", error);
+      }
+    }
+
+    window.onload = () => {
+      createSeats();
+      fetchOccupiedSeats();
+    };
+  </script>
+</body>
+</html>

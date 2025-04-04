@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Your Stand</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background-color: #ecf0f1;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-top: 20px;
+    }
+    .stands-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .stand {
+      width: 200px;
+      padding: 20px;
+      background-color: #3498db;
+      color: white;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .stand:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Select Your Stand</h1>
+  <div class="stands-container">
+    <div class="stand" onclick="redirectTo('merchant')">Vijay Merchant Stand</div>
+    <div class="stand" onclick="redirectTo('gavaskar')">Sunil Gavaskar Stand</div>
+    <div class="stand" onclick="redirectTo('divecha')">Divecha Stand</div>
+    <div class="stand" onclick="redirectTo('north')">North Stand</div>
+    <div class="stand" onclick="redirectTo('sachin')">Sachin Tendulkar Stand</div>
+  </div>
+
+  <script>
+    function redirectTo(stand) {
+      window.location.href = `../${stand}/public/index.html`;
+    }
+  </script>
+</body>
+</html>

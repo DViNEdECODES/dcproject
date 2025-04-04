@@ -1,0 +1,20 @@
+# Use official Node.js image
+FROM node:18
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Install dependencies
+RUN npm install express
+
+# Expose port (container port)
+EXPOSE 3001
+
+# Set environment variable for stand name
+ENV STAND_NAME="Vijay Merchant Stand"
+
+# Start server
+CMD ["node", "server.js"]

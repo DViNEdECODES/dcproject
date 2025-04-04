@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  merchant:
+    build: ./merchant
+    ports:
+      - "3001:3001"
+    environment:
+      - STAND_NAME=Vijay Merchant Stand
+
+  sachin:
+    build: ./sachin
+    ports:
+      - "3002:3002"
+    environment:
+      - STAND_NAME=Sachin Tendulkar Stand
+
+  divecha:
+    build: ./divecha
+    ports:
+      - "3003:3003"
+    environment:
+      - STAND_NAME=Divecha Stand
+
+  gavaskar:
+    build: ./gavaskar
+    ports:
+      - "3004:3004"
+    environment:
+      - STAND_NAME=Sunil Gavaskar Stand
+
+  north:
+    build: ./north
+    ports:
+      - "3005:3005"
+    environment:
+      - STAND_NAME=North Stand
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - merchant
+      - sachin
+      - divecha
+      - gavaskar
+      - north

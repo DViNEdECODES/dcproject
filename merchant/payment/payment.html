@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Page</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f6fa;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .payment-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+    button {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #219150;
+    }
+  </style>
+</head>
+<body>
+  <h1>Confirm Your Booking</h1>
+
+  <div class="payment-box">
+    <p><strong>Stand:</strong> <span id="standName"></span></p>
+    <p><strong>Seats:</strong> <span id="seatsList"></span></p>
+    <p><strong>Total:</strong> $<span id="totalAmount"></span></p>
+
+    <button onclick="payNow()">Pay Now</button>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const stand = urlParams.get('stand');
+    const seats = urlParams.get('seats').split(',').map(Number);
+    const userId = urlParams.get('user');
+    const pricePerSeat = 10;
+
+    document.getElementById('standName').innerText = stand;
+    document.getElementById('seatsList').innerText = seats.join(', ');
+    document.getElementById('totalAmount').innerText = seats.length * pricePerSeat;
+
+    function payNow() {
+      fetch('http://localhost:3000/api/seats/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stand, seatNumbers: seats, userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('Payment Successful! Booking Confirmed ✅');
+          window.location.href = '../success.html'; // optional: create a thank you page
+        } else {
+          alert('Payment failed or seat conflict. Try again.');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
