@@ -2,57 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Select Your Stand</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      text-align: center;
-      font-family: sans-serif;
-      background-color: #ecf0f1;
-    }
-    h1 {
-      color: #2c3e50;
-      margin-top: 20px;
-    }
-    .stands-container {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 30px;
+      flex-direction: column;
+      align-items: center;
     }
-    .stand {
-      width: 200px;
+
+    h1 {
+      margin: 40px 0 20px;
+      color: #2c3e50;
+      font-size: 2.5rem;
+    }
+
+    .stands-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      max-width: 1100px;
       padding: 20px;
-      background-color: #3498db;
-      color: white;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background 0.3s, transform 0.2s;
+      width: 100%;
     }
+
+    .stand {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
     .stand:hover {
-      background-color: #2980b9;
-      transform: scale(1.05);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .stand h2 {
+      color: #2c3e50;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .stand p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .stand .badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #3498db;
+      color: white;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 20px;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      background: #2c3e50;
+      color: white;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+
   <h1>Select Your Stand</h1>
+
   <div class="stands-container">
-    <div class="stand" onclick="redirectTo('merchant')">Vijay Merchant Stand</div>
-    <div class="stand" onclick="redirectTo('gavaskar')">Sunil Gavaskar Stand</div>
-    <div class="stand" onclick="redirectTo('divecha')">Divecha Stand</div>
-    <div class="stand" onclick="redirectTo('north')">North Stand</div>
-    <div class="stand" onclick="redirectTo('sachin')">Sachin Tendulkar Stand</div>
+    <div class="stand" onclick="redirectTo('merchant')" title="Click to view seats in Vijay Merchant Stand">
+      <span class="badge">LIVE</span>
+      <h2>Vijay Merchant Stand</h2>
+      <p>Known for great views and close proximity to players. Ideal for die-hard fans!</p>
+    </div>
+
+    <div class="stand" onclick="redirectTo('gavaskar')" title="Click to view seats in Sunil Gavaskar Stand">
+      <span class="badge">LIVE</span>
+      <h2>Sunil Gavaskar Stand</h2>
+      <p>A family-friendly stand with shade and comfort. Good view of mid-wicket area.</p>
+    </div>
+
+    <div class="stand" onclick="redirectTo('divecha')" title="Click to view seats in Divecha Stand">
+      <span class="badge">LIVE</span>
+      <h2>Divecha Stand</h2>
+      <p>Upper-tier excitement and panoramic view of the entire ground.</p>
+    </div>
+
+    <div class="stand" onclick="redirectTo('north')" title="Click to view seats in North Stand">
+      <span class="badge">LIVE</span>
+      <h2>North Stand</h2>
+      <p>Legendary fan section. Pure passion, chants, and high-energy environment.</p>
+    </div>
+
+    <div class="stand" onclick="redirectTo('sachin')" title="Click to view seats in Sachin Tendulkar Stand">
+      <span class="badge">LIVE</span>
+      <h2>Sachin Tendulkar Stand</h2>
+      <p>The most iconic stand. Central view and fan-favorite of all generations.</p>
+    </div>
   </div>
+
+  <footer>
+    &copy; 2025 World Cup Booking System
+  </footer>
 
   <script>
     function redirectTo(stand) {
       window.location.href = `../${stand}/public/index.html`;
     }
   </script>
+
 </body>
 </html>
+

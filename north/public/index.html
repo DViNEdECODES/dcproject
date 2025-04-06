@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vijay Merchant Stand</title>
+  <title>Sunil Gavaskar</title>
   <style>
     body {
       text-align: center;
@@ -57,6 +57,12 @@
     button:hover {
       background-color: #2980b9;
     }
+    #loading {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #e67e22;
+    }
   </style>
 </head>
 <body>
@@ -69,22 +75,30 @@
     <p>Price per seat: <strong>$10</strong></p>
     <p>Selected Seats: <span id="count">0</span></p>
     <p>Total Price: $<span id="total">0</span></p>
-    <button onclick="bookSeats()">Book</button>
+    <button id="bookBtn" onclick="proceedToPayment()">Book</button>
+    <p id="loading">Processing... Please wait.</p>
   </div>
 
   <script>
     const seatContainer = document.getElementById('seatContainer');
     const count = document.getElementById('count');
     const total = document.getElementById('total');
+    const bookBtn = document.getElementById('bookBtn');
+    const loadingText = document.getElementById('loading');
     const ticketPrice = 10;
+    const stand = "SunilGavaskar"; // Match backend naming
+    const userId = localStorage.getItem("userId") || "user123"; // Replace with actual user ID
+    const totalSeats = 30;
 
-    // Create seats dynamically
-    for (let i = 1; i <= 30; i++) {
-      const seat = document.createElement('div');
-      seat.classList.add('seat');
-      seat.innerText = i;
-      seat.addEventListener('click', () => toggleSeat(seat));
-      seatContainer.appendChild(seat);
+    function createSeats() {
+      for (let i = 1; i <= totalSeats; i++) {
+        const seat = document.createElement('div');
+        seat.classList.add('seat');
+        seat.innerText = i;
+        seat.dataset.id = i;
+        seat.addEventListener('click', () => toggleSeat(seat));
+        seatContainer.appendChild(seat);
+      }
     }
 
     function toggleSeat(seat) {
@@ -100,15 +114,65 @@
       total.innerText = selectedSeats.length * ticketPrice;
     }
 
-    function bookSeats() {
+    async function proceedToPayment() {
       const selectedSeats = document.querySelectorAll('.seat.selected');
       if (selectedSeats.length === 0) {
-        alert('Please select at least one seat to book.');
+        alert('Please select at least one seat.');
         return;
       }
-      selectedSeats.forEach(seat => seat.classList.remove('selected'));
-      alert(`You have booked ${selectedSeats.length} seats for $${selectedSeats.length * ticketPrice}`);
+
+      const seatNumbers = Array.from(selectedSeats).map(seat => parseInt(seat.innerText));
+      bookBtn.disabled = true;
+      loadingText.style.display = 'block';
+
+      try {
+        const response = await fetch('http://localhost:5000/api/seats/reserve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stand, seatNumbers, userId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const query = `?stand=${encodeURIComponent(stand)}&seats=${seatNumbers.join(',')}&user=${userId}`;
+          window.location.href = `../payment/payment.html${query}`;
+        } else {
+          alert('Some seats are already reserved. Refreshing seat status...');
+          fetchOccupiedSeats();
+        }
+      } catch (error) {
+        console.error("Error reserving seats:", error);
+        alert('Failed to reserve seats. Please try again.');
+      } finally {
+        bookBtn.disabled = false;
+        loadingText.style.display = 'none';
+      }
     }
+
+    async function fetchOccupiedSeats() {
+      try {
+        const response = await fetch(`http://localhost:5000/api/seats/status?stand=${encodeURIComponent(stand)}`);
+        const data = await response.json();
+
+        if (data.success && data.occupiedSeats) {
+          document.querySelectorAll('.seat').forEach(seat => {
+            const seatNumber = parseInt(seat.dataset.id);
+            if (data.occupiedSeats.includes(seatNumber)) {
+              seat.classList.add('occupied');
+              seat.removeEventListener('click', () => toggleSeat(seat)); // Disable click
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching occupied seats:", error);
+      }
+    }
+
+    window.onload = () => {
+      createSeats();
+      fetchOccupiedSeats();
+    };
   </script>
 </body>
 </html>

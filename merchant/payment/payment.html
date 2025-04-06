@@ -3,47 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <title>Payment Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      background-color: #f5f6fa;
-      text-align: center;
-      padding: 50px;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
-    h1 {
-      color: #2c3e50;
-    }
+
     .payment-box {
       background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 400px;
-      margin: auto;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
     }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 10px 0;
+      color: #34495e;
+    }
+
+    strong {
+      color: #2c3e50;
+    }
+
     button {
       background-color: #27ae60;
       color: white;
       border: none;
-      padding: 12px 25px;
+      padding: 14px 30px;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 25px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
+
     button:hover {
       background-color: #219150;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <h1>Confirm Your Booking</h1>
 
   <div class="payment-box">
+    <h1>Confirm Your Booking</h1>
     <p><strong>Stand:</strong> <span id="standName"></span></p>
     <p><strong>Seats:</strong> <span id="seatsList"></span></p>
     <p><strong>Total:</strong> $<span id="totalAmount"></span></p>
-
     <button onclick="payNow()">Pay Now</button>
   </div>
 
@@ -67,11 +100,15 @@
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          alert('Payment Successful! Booking Confirmed ✅');
-          window.location.href = '../success.html'; // optional: create a thank you page
+          alert('✅ Payment Successful! Booking Confirmed');
+          window.location.href = '../success.html'; // optional thank you page
         } else {
-          alert('Payment failed or seat conflict. Try again.');
+          alert('❌ Payment failed or seat conflict. Try again.');
         }
+      })
+      .catch(err => {
+        alert('⚠️ Server error. Please try again later.');
+        console.error(err);
       });
     }
   </script>
