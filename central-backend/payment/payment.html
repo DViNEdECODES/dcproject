@@ -92,25 +92,24 @@
     document.getElementById('totalAmount').innerText = seats.length * pricePerSeat;
 
     function payNow() {
-      fetch('http://localhost:3000/api/seats/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stand, seatNumbers: seats, userId })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          alert('✅ Payment Successful! Booking Confirmed');
-          window.location.href = '../success.html'; // optional thank you page
-        } else {
-          alert('❌ Payment failed or seat conflict. Try again.');
-        }
-      })
-      .catch(err => {
-        alert('⚠️ Server error. Please try again later.');
-        console.error(err);
-      });
+      fetch('http://localhost:3000/confirm-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stand, seatNumbers: seats, userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = 'thankyou.html'; // No need for full path if it's in the same folder
+    } else {
+      alert('❌ Payment failed or seat conflict. Try again.');
     }
+  })
+  .catch(err => {
+    alert('⚠️ Server error. Please try again later.');
+    console.error(err);
+  });
+}
   </script>
 </body>
 </html>

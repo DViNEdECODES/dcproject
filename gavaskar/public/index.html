@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sunil Gavaskar</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      text-align: center;
-      font-family: sans-serif;
-      background-color: #ecf0f1;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
+
     h1 {
+      font-size: 2.2rem;
       color: #2c3e50;
+      margin-bottom: 10px;
     }
+
+    p {
+      color: #34495e;
+      margin-bottom: 20px;
+    }
+
     .seat-container {
       display: grid;
       grid-template-columns: repeat(6, 50px);
-      gap: 10px;
+      gap: 15px;
       justify-content: center;
-      margin-top: 20px;
+      margin-bottom: 30px;
     }
+
     .seat {
       width: 50px;
       height: 50px;
@@ -28,40 +48,73 @@
       text-align: center;
       line-height: 50px;
       cursor: pointer;
-      border-radius: 5px;
-      transition: background 0.3s;
+      border-radius: 8px;
+      transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+      font-weight: bold;
     }
+
+    .seat:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
     .seat.selected {
       background-color: gray;
       color: white;
     }
+
     .seat.occupied {
       background-color: #e74c3c;
       cursor: not-allowed;
       color: white;
     }
+
     .info {
-      margin-top: 20px;
-      font-size: 18px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin-bottom: 30px;
+      max-width: 400px;
     }
+
+    .info p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
     button {
       background-color: #3498db;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 25px;
       font-size: 16px;
       cursor: pointer;
-      border-radius: 5px;
-      transition: background 0.3s;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      margin-top: 15px;
     }
+
     button:hover {
       background-color: #2980b9;
     }
+
     #loading {
       display: none;
-      margin-top: 10px;
       font-size: 14px;
       color: #e67e22;
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      background: #2c3e50;
+      color: white;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
     }
   </style>
 </head>
@@ -80,73 +133,78 @@
   </div>
 
   <script>
-    const seatContainer = document.getElementById('seatContainer');
-    const count = document.getElementById('count');
-    const total = document.getElementById('total');
-    const bookBtn = document.getElementById('bookBtn');
-    const loadingText = document.getElementById('loading');
+    const seatContainer = document.getElementById("seatContainer");
+    const count = document.getElementById("count");
+    const total = document.getElementById("total");
+    const bookBtn = document.getElementById("bookBtn");
+    const loadingText = document.getElementById("loading");
+
     const ticketPrice = 10;
-    const stand = "SunilGavaskar"; // Match backend naming
-    const userId = localStorage.getItem("userId") || "user123"; // Replace with actual user ID
+    const stand = "SunilGavaskar"; // should match backend naming
+    const userId = localStorage.getItem("userId") || "user123"; // fallback for demo
     const totalSeats = 30;
 
     function createSeats() {
       for (let i = 1; i <= totalSeats; i++) {
-        const seat = document.createElement('div');
-        seat.classList.add('seat');
+        const seat = document.createElement("div");
+        seat.classList.add("seat");
         seat.innerText = i;
         seat.dataset.id = i;
-        seat.addEventListener('click', () => toggleSeat(seat));
+        seat.addEventListener("click", () => toggleSeat(seat));
         seatContainer.appendChild(seat);
       }
     }
 
     function toggleSeat(seat) {
-      if (!seat.classList.contains('occupied')) {
-        seat.classList.toggle('selected');
+      if (!seat.classList.contains("occupied")) {
+        seat.classList.toggle("selected");
         updateSelectedCount();
       }
     }
 
     function updateSelectedCount() {
-      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const selectedSeats = document.querySelectorAll(".seat.selected");
       count.innerText = selectedSeats.length;
       total.innerText = selectedSeats.length * ticketPrice;
     }
 
     async function proceedToPayment() {
-      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const selectedSeats = document.querySelectorAll(".seat.selected");
       if (selectedSeats.length === 0) {
-        alert('Please select at least one seat.');
+        alert("Please select at least one seat.");
         return;
       }
 
       const seatNumbers = Array.from(selectedSeats).map(seat => parseInt(seat.innerText));
       bookBtn.disabled = true;
-      loadingText.style.display = 'block';
+      loadingText.style.display = "block";
 
       try {
-        const response = await fetch('http://localhost:5000/api/seats/reserve', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ stand, seatNumbers, userId })
+        const response = await fetch("http://localhost:5000/api/seats/reserve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stand, seatNumbers, userId }),
         });
 
         const data = await response.json();
 
         if (data.success) {
           const query = `?stand=${encodeURIComponent(stand)}&seats=${seatNumbers.join(',')}&user=${userId}`;
-          window.location.href = `../payment/payment.html${query}`;
+          window.location.href = `http://localhost:5000/payment/payment.html${query}`;
+
+
+
+
         } else {
-          alert('Some seats are already reserved. Refreshing seat status...');
+          alert("Some seats are already reserved. Refreshing...");
           fetchOccupiedSeats();
         }
       } catch (error) {
         console.error("Error reserving seats:", error);
-        alert('Failed to reserve seats. Please try again.');
+        alert("Reservation failed. Please try again.");
       } finally {
         bookBtn.disabled = false;
-        loadingText.style.display = 'none';
+        loadingText.style.display = "none";
       }
     }
 
@@ -156,11 +214,11 @@
         const data = await response.json();
 
         if (data.success && data.occupiedSeats) {
-          document.querySelectorAll('.seat').forEach(seat => {
+          document.querySelectorAll(".seat").forEach(seat => {
             const seatNumber = parseInt(seat.dataset.id);
             if (data.occupiedSeats.includes(seatNumber)) {
-              seat.classList.add('occupied');
-              seat.removeEventListener('click', () => toggleSeat(seat)); // Disable click
+              seat.classList.add("occupied");
+              seat.onclick = null; // Disable interaction
             }
           });
         }

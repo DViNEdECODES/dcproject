@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vijay Merchant</title>
+  <title>Vijay Merchant Stand</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -144,7 +144,7 @@
     const bookBtn = document.getElementById('bookBtn');
     const loadingText = document.getElementById('loading');
     const ticketPrice = 10;
-    const stand = "VijayMerchant"; // Match backend naming convention
+    const stand = "VijayMerchant";
     const userId = localStorage.getItem("userId") || "user123";
     const totalSeats = 30;
 
@@ -194,14 +194,14 @@
 
         if (data.success) {
           const query = `?stand=${encodeURIComponent(stand)}&seats=${seatNumbers.join(',')}&user=${userId}`;
-          window.location.href = `../payment/payment.html${query}`;
+          window.location.href = `http://localhost:5000/payment/payment.html${query}`;
         } else {
-          alert('Some seats are already reserved. Refreshing seat status...');
+          alert('Some seats are already reserved. Refreshing...');
           fetchOccupiedSeats();
         }
       } catch (error) {
         console.error("Error reserving seats:", error);
-        alert('Failed to reserve seats. Please try again.');
+        alert("Reservation failed. Please try again.");
       } finally {
         bookBtn.disabled = false;
         loadingText.style.display = 'none';
@@ -214,11 +214,11 @@
         const data = await response.json();
 
         if (data.success && data.occupiedSeats) {
-          document.querySelectorAll('.seat').forEach(seat => {
+          document.querySelectorAll(".seat").forEach(seat => {
             const seatNumber = parseInt(seat.dataset.id);
             if (data.occupiedSeats.includes(seatNumber)) {
-              seat.classList.add('occupied');
-              seat.replaceWith(seat.cloneNode(true)); // Remove event listener
+              seat.classList.add("occupied");
+              seat.onclick = null;
             }
           });
         }

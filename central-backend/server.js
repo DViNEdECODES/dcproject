@@ -1,4 +1,6 @@
 const express = require("express");
+
+const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Ticket = require('./models/Tickets'); // Import Ticket model
@@ -6,6 +8,7 @@ const Ticket = require('./models/Tickets'); // Import Ticket model
 const app = express();
 app.use(express.json()); // Middleware to parse JSON requests
 app.use(cors()); // Enable CORS for frontend access
+app.use('/payment', express.static(path.join(__dirname, 'payment')));
 
 // MongoDB Connection
 mongoose.connect("mongodb://localhost:27017/stadiumtickets", {
